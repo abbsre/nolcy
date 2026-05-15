@@ -109,11 +109,29 @@ function Wait-ForMainWindow([System.Diagnostics.Process]$Process, [int]$TimeoutS
     Fail "No se pudo obtener la ventana principal del proceso PID $($Process.Id)."
 }
 
-function Start-ToolConsole([string]$ToolName, [string]$WorkingDirectory, [string]$WindowTitle, [string]$WindowStyle = 'Normal') {
+function Start-ToolConsole(
+    [string]$ToolName,
+    [string]$WorkingDirectory,
+    [string]$WindowTitle,
+    [string]$WindowStyle = 'Normal',
+    [string]$ToolCommand = $null,
+    [string]$BeforeCommand = $null
+) {
     $escapedDirectory = $WorkingDirectory.Replace("'", "''")
     $escapedTitle = $WindowTitle.Replace("'", "''")
+    $effectiveCommand = if ([string]::IsNullOrWhiteSpace($ToolCommand)) { $ToolName } else { $ToolCommand }
 
-    $command = "`$Host.UI.RawUI.WindowTitle = '$escapedTitle'; Set-Location -LiteralPath '$escapedDirectory'; $ToolName"
+    $segments = @(
+        "`$Host.UI.RawUI.WindowTitle = '$escapedTitle'"
+        "Set-Location -LiteralPath '$escapedDirectory'"
+    )
+
+    if (-not [string]::IsNullOrWhiteSpace($BeforeCommand)) {
+        $segments += $BeforeCommand
+    }
+
+    $segments += $effectiveCommand
+    $command = ($segments -join '; ')
 
     if ($DryRun) {
         return [pscustomobject]@{
@@ -193,8 +211,8 @@ try {
 
     $windows = @(
         Start-ToolConsole -ToolName 'opencode' -WorkingDirectory $workingDirectory -WindowTitle 'opencode' -WindowStyle 'Normal'
-        Start-ToolConsole -ToolName 'lazygit' -WorkingDirectory $workingDirectory -WindowTitle 'lazygit' -WindowStyle 'Normal'
-        Start-ToolConsole -ToolName 'nvim' -WorkingDirectory $workingDirectory -WindowTitle 'nvim' -WindowStyle 'Maximized'
+        Start-ToolConsole -ToolName 'lazygit' -WorkingDirectory $workingDirectory -WindowTitle 'lazygit' -WindowStyle 'Normal' -BeforeCommand '$Host.UI.RawUI.BackgroundColor = ''DarkGray''; $Host.UI.RawUI.ForegroundColor = ''White''; Clear-Host'
+        Start-ToolConsole -ToolName 'nvim' -WorkingDirectory $workingDirectory -WindowTitle 'nvim' -WindowStyle 'Maximized' -ToolCommand 'nvim .'
     )
 
     if ($DryRun) {

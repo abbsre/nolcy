@@ -52,9 +52,11 @@ El sistema debe abrir tres consolas en Windows usando la ruta de `path.txt` como
 6. Validar que existan al menos dos escritorios virtuales antes de ubicar ventanas.
 7. Mover `opencode` y `lazygit` al escritorio 1.
 8. Mover `nvim` al escritorio 2.
-9. Aplicar la disposicion de ventanas en la pantalla principal: izquierda para `opencode`, derecha para `lazygit` y maximizada para `nvim`.
-10. Mostrar el escritorio 2 al finalizar para dejar `nvim` listo para uso inmediato.
-11. Fallar con un mensaje claro si faltan escritorios virtuales o el soporte necesario para mover ventanas.
+9. Abrir `nvim` sobre el directorio objetivo para evitar la pantalla de bienvenida vacia.
+10. Aplicar la disposicion de ventanas en la pantalla principal: izquierda para `opencode`, derecha para `lazygit` y maximizada para `nvim`.
+11. Abrir `lazygit` en Windows Terminal para conservar el tema oscuro habitual del usuario.
+12. Mostrar el escritorio 2 al finalizar para dejar `nvim` listo para uso inmediato.
+13. Fallar con un mensaje claro si faltan escritorios virtuales o el soporte necesario para mover ventanas.
 
 ## Dependencias operativas
 
@@ -81,8 +83,10 @@ El sistema debe abrir tres consolas en Windows usando la ruta de `path.txt` como
 5. `nvim` queda abierto en el escritorio 2.
 6. `opencode` queda visible a la izquierda en la pantalla principal cuando se muestra el escritorio 1.
 7. `lazygit` queda visible a la derecha en la pantalla principal cuando se muestra el escritorio 1.
-8. `nvim` queda maximizado en la pantalla principal cuando se muestra el escritorio 2.
-9. El script termina dejando visible el escritorio 2.
-10. Si la configuracion de entrada es invalida, el script falla con un mensaje entendible.
-11. Si falta alguno de los comandos requeridos, el script falla con un mensaje entendible.
-12. Si el soporte para escritorios virtuales no esta disponible, el script falla sin instalar nada por su cuenta.
+8. `lazygit` se abre con fondo oscuro en su consola.
+9. `nvim` abre el directorio objetivo y no la pantalla inicial vacia por defecto.
+10. `nvim` queda maximizado en la pantalla principal cuando se muestra el escritorio 2.
+11. El script termina dejando visible el escritorio 2.
+12. Si la configuracion de entrada es invalida, el script falla con un mensaje entendible.
+13. Si falta alguno de los comandos requeridos, el script falla con un mensaje entendible.
+14. Si el soporte para escritorios virtuales no esta disponible, el script falla sin instalar nada por su cuenta.
