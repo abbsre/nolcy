@@ -115,23 +115,12 @@ function Start-ToolConsole(
     [string]$WindowTitle,
     [string]$WindowStyle = 'Normal',
     [string]$ToolCommand = $null,
-    [string]$BeforeCommand = $null
+    [string]$BeforeCommand = $null,
+    [string]$HostExecutable = 'powershell.exe'
 ) {
     $escapedDirectory = $WorkingDirectory.Replace("'", "''")
     $escapedTitle = $WindowTitle.Replace("'", "''")
     $effectiveCommand = if ([string]::IsNullOrWhiteSpace($ToolCommand)) { $ToolName } else { $ToolCommand }
-
-    $segments = @(
-        "`$Host.UI.RawUI.WindowTitle = '$escapedTitle'"
-        "Set-Location -LiteralPath '$escapedDirectory'"
-    )
-
-    if (-not [string]::IsNullOrWhiteSpace($BeforeCommand)) {
-        $segments += $BeforeCommand
-    }
-
-    $segments += $effectiveCommand
-    $command = ($segments -join '; ')
 
     if ($DryRun) {
         return [pscustomobject]@{
@@ -143,11 +132,40 @@ function Start-ToolConsole(
         }
     }
 
-    $process = Start-Process -FilePath 'powershell.exe' `
-        -ArgumentList @('-NoExit', '-ExecutionPolicy', 'Bypass', '-Command', $command) `
-        -WorkingDirectory $WorkingDirectory `
-        -WindowStyle $WindowStyle `
-        -PassThru
+    if ($HostExecutable -eq 'cmd.exe') {
+        $cmdSegments = @(
+            "title $WindowTitle"
+            "cd /d `"$WorkingDirectory`""
+            $effectiveCommand
+        )
+
+        $cmdCommand = ($cmdSegments -join ' & ')
+
+        $process = Start-Process -FilePath 'cmd.exe' `
+            -ArgumentList @('/k', $cmdCommand) `
+            -WorkingDirectory $WorkingDirectory `
+            -WindowStyle $WindowStyle `
+            -PassThru
+    }
+    else {
+        $segments = @(
+            "`$Host.UI.RawUI.WindowTitle = '$escapedTitle'"
+            "Set-Location -LiteralPath '$escapedDirectory'"
+        )
+
+        if (-not [string]::IsNullOrWhiteSpace($BeforeCommand)) {
+            $segments += $BeforeCommand
+        }
+
+        $segments += $effectiveCommand
+        $command = ($segments -join '; ')
+
+        $process = Start-Process -FilePath 'powershell.exe' `
+            -ArgumentList @('-NoExit', '-ExecutionPolicy', 'Bypass', '-Command', $command) `
+            -WorkingDirectory $WorkingDirectory `
+            -WindowStyle $WindowStyle `
+            -PassThru
+    }
 
     $handle = Wait-ForMainWindow -Process $process
 
@@ -211,7 +229,7 @@ try {
 
     $windows = @(
         Start-ToolConsole -ToolName 'opencode' -WorkingDirectory $workingDirectory -WindowTitle 'opencode' -WindowStyle 'Normal'
-        Start-ToolConsole -ToolName 'lazygit' -WorkingDirectory $workingDirectory -WindowTitle 'lazygit' -WindowStyle 'Normal' -BeforeCommand '$Host.UI.RawUI.BackgroundColor = ''DarkGray''; $Host.UI.RawUI.ForegroundColor = ''White''; Clear-Host'
+        Start-ToolConsole -ToolName 'lazygit' -WorkingDirectory $workingDirectory -WindowTitle 'lazygit' -WindowStyle 'Normal' -HostExecutable 'cmd.exe'
         Start-ToolConsole -ToolName 'nvim' -WorkingDirectory $workingDirectory -WindowTitle 'nvim' -WindowStyle 'Maximized' -ToolCommand 'nvim .'
     )
 

@@ -47,14 +47,14 @@ El sistema debe abrir tres consolas en Windows usando la ruta de `path.txt` como
 1. Validar que `path.txt` exista.
 2. Validar que la ruta dentro de `path.txt` exista antes de abrir las herramientas.
 3. Si falta el archivo o la ruta no existe, detener la ejecucion con un error claro.
-4. Abrir cada herramienta en una nueva consola de PowerShell.
+4. Abrir cada herramienta en una nueva consola.
 5. Validar que `opencode`, `lazygit` y `nvim` existan en `PATH` antes de abrirlas.
 6. Validar que existan al menos dos escritorios virtuales antes de ubicar ventanas.
 7. Mover `opencode` y `lazygit` al escritorio 1.
 8. Mover `nvim` al escritorio 2.
 9. Abrir `nvim` sobre el directorio objetivo para evitar la pantalla de bienvenida vacia.
 10. Aplicar la disposicion de ventanas en la pantalla principal: izquierda para `opencode`, derecha para `lazygit` y maximizada para `nvim`.
-11. Abrir `lazygit` en Windows Terminal para conservar el tema oscuro habitual del usuario.
+11. Abrir `lazygit` en la consola de Windows para conservar su fondo oscuro habitual.
 12. Mostrar el escritorio 2 al finalizar para dejar `nvim` listo para uso inmediato.
 13. Fallar con un mensaje claro si faltan escritorios virtuales o el soporte necesario para mover ventanas.
 
@@ -83,7 +83,7 @@ El sistema debe abrir tres consolas en Windows usando la ruta de `path.txt` como
 5. `nvim` queda abierto en el escritorio 2.
 6. `opencode` queda visible a la izquierda en la pantalla principal cuando se muestra el escritorio 1.
 7. `lazygit` queda visible a la derecha en la pantalla principal cuando se muestra el escritorio 1.
-8. `lazygit` se abre con fondo oscuro en su consola.
+8. `lazygit` se abre en la consola de Windows con su fondo oscuro habitual.
 9. `nvim` abre el directorio objetivo y no la pantalla inicial vacia por defecto.
 10. `nvim` queda maximizado en la pantalla principal cuando se muestra el escritorio 2.
 11. El script termina dejando visible el escritorio 2.
