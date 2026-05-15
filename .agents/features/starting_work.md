@@ -6,15 +6,16 @@ Automatizar la preparacion del entorno de trabajo al iniciar una sesion de desar
 
 ## Entrada
 
-1. Leer una ruta desde `path.txt`.
-2. El contenido de `path.txt` representa el `working directory` comun para todas las herramientas.
+1. Leer una ruta desde el parametro `ProjectPath` o desde `path.txt`.
+2. Si existe `ProjectPath`, esa ruta tiene prioridad sobre `path.txt`.
+3. La ruta resultante representa el `working directory` comun para todas las herramientas.
 
 ## Estado actual
 
 La version actual implementada es una v2 operativa.
 
-1. Abre `opencode`, `lazygit` y `nvim` en consolas separadas de PowerShell.
-2. Usa la ruta definida en `path.txt` como `working directory` comun.
+1. Abre `opencode`, `lazygit` y `nvim` en consolas separadas.
+2. Usa la ruta recibida por parametro o la ruta definida en `path.txt` como `working directory` comun.
 3. Requiere al menos dos escritorios virtuales de Windows ya creados.
 4. Mueve `opencode` y `lazygit` al escritorio 1.
 5. Mueve `nvim` al escritorio 2.
@@ -25,11 +26,11 @@ La version actual implementada es una v2 operativa.
 
 ## Resultado esperado final
 
-El sistema debe abrir tres consolas en Windows usando la ruta de `path.txt` como contexto:
+El sistema debe abrir tres consolas en Windows usando la ruta resuelta como contexto:
 
-1. En el escritorio 1, abrir PowerShell con `opencode` y ajustar la ventana al lado izquierdo de la pantalla principal de la PC.
-2. En el escritorio 1, abrir PowerShell con `lazygit` y ajustar la ventana al lado derecho de la pantalla principal de la PC.
-3. En el escritorio 2, abrir PowerShell con `nvim` y maximizar la ventana en la pantalla principal de la PC.
+1. En el escritorio 1, abrir `opencode` y ajustar la ventana al lado izquierdo de la pantalla principal de la PC.
+2. En el escritorio 1, abrir `lazygit` y ajustar la ventana al lado derecho de la pantalla principal de la PC.
+3. En el escritorio 2, abrir `nvim` y maximizar la ventana en la pantalla principal de la PC.
 
 ## Restricciones
 
@@ -44,10 +45,9 @@ El sistema debe abrir tres consolas en Windows usando la ruta de `path.txt` como
 
 ## Comportamiento minimo esperado en v2
 
-1. Validar que `path.txt` exista.
-2. Validar que la ruta dentro de `path.txt` exista antes de abrir las herramientas.
-3. Si falta el archivo o la ruta no existe, detener la ejecucion con un error claro.
-4. Abrir cada herramienta en una nueva consola.
+1. Validar que exista una ruta valida recibida por parametro o en `path.txt`.
+2. Si falta la ruta o no existe, detener la ejecucion con un error claro.
+3. Abrir cada herramienta en una nueva consola.
 5. Validar que `opencode`, `lazygit` y `nvim` existan en `PATH` antes de abrirlas.
 6. Validar que existan al menos dos escritorios virtuales antes de ubicar ventanas.
 7. Mover `opencode` y `lazygit` al escritorio 1.
@@ -77,7 +77,7 @@ El sistema debe abrir tres consolas en Windows usando la ruta de `path.txt` como
 ## Criterios de aceptacion de v2
 
 1. Ejecutar el script abre `opencode`, `lazygit` y `nvim` sin pedir pasos manuales intermedios.
-2. Las tres herramientas usan el directorio definido en `path.txt`.
+2. Las tres herramientas usan el directorio recibido por parametro o definido en `path.txt`.
 3. Si existen menos de dos escritorios virtuales, el script falla y le indica al usuario que debe crear el escritorio faltante manualmente.
 4. `opencode` y `lazygit` quedan abiertos en el escritorio 1.
 5. `nvim` queda abierto en el escritorio 2.

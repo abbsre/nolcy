@@ -1,4 +1,5 @@
 param(
+    [string]$ProjectPath,
     [switch]$DryRun
 )
 
@@ -36,6 +37,14 @@ function Fail([string]$Message) {
 }
 
 function Get-WorkingDirectory {
+    if (-not [string]::IsNullOrWhiteSpace($ProjectPath)) {
+        if (-not (Test-Path -LiteralPath $ProjectPath -PathType Container)) {
+            Fail "La ruta recibida como parametro no existe: $ProjectPath"
+        }
+
+        return $ProjectPath
+    }
+
     if (-not (Test-Path -LiteralPath $pathFile -PathType Leaf)) {
         Fail "No se encontro path.txt en $scriptRoot. Crea ese archivo con la ruta del proyecto."
     }
