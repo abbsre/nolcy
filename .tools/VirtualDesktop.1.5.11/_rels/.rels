@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Type="http://schemas.microsoft.com/packaging/2010/07/manifest" Target="/VirtualDesktop.nuspec" Id="RAA4777DE01621BED" />
+  <Relationship Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="/package/services/metadata/core-properties/3f538bf2f7e7478585108e7c93b82b0b.psmdcp" Id="RA9C862ECE13823D0" />
+</Relationships>

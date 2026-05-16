@@ -48,7 +48,7 @@ namespace WorkspaceDesktop
             projectsExamplePath = Path.Combine(appRoot, "projects.example.txt");
             registeredProjects = new List<string>();
 
-            Text = "Workspace Desktop";
+            Text = "Nocly";
             StartPosition = FormStartPosition.CenterScreen;
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
@@ -61,7 +61,7 @@ namespace WorkspaceDesktop
                 AutoSize = true,
                 Location = new Point(22, 20),
                 Font = new Font("Segoe UI", 16F, FontStyle.Bold, GraphicsUnit.Point),
-                Text = "Welcome to your workspace launcher"
+                Text = "Welcome to Nocly"
             };
 
             helpLabel = new Label
@@ -69,7 +69,7 @@ namespace WorkspaceDesktop
                 AutoSize = false,
                 Location = new Point(24, 58),
                 Size = new Size(700, 40),
-                Text = "Choose an existing registered project or add a new one. The launcher will pass the selected path to the current workspace startup script."
+                Text = "Choose an existing registered project or add a new one. The launcher will open Nvim, Opencode and Lazygit."
             };
 
             projectsListBox = new ListBox

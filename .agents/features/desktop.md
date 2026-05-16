@@ -9,10 +9,11 @@ Create a Windows `.exe` desktop app that uses the existing workspace scripts and
 The current implementation is a first working version.
 
 1. It is a WinForms desktop app compiled with the Windows .NET Framework C# compiler.
-2. It opens a centered, non-maximized window.
-3. It stores registered projects in a local text file with one path per line.
-4. It launches `start-work.bat` with the selected project path as a parameter.
-5. It closes after triggering the launcher.
+2. The current desktop UI is branded as `Nocly`.
+3. It opens a centered, non-maximized window.
+4. It stores registered projects in a local text file with one path per line.
+5. It launches `start-work.bat` with the selected project path as a parameter.
+6. It closes after triggering the launcher.
 
 ## Language
 
