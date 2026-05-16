@@ -28,17 +28,17 @@ The current implementation is a first working version.
 
 ## Main User Flows
 
-The app must let the user choose between two actions:
+The app must let the user work from the registered project list and provide one primary creation action:
 
-1. `Open Existing Project`
+1. Select a project from the visible registered list.
 2. `Add Project`
 
 ## Open Existing Project Flow
 
 1. Show the list of project paths already stored in the persistent file.
 2. Let the user click a path from the list to select it.
-3. Provide a file-system browser to help the user find a registered project path more easily.
-4. Only allow selection of paths that already exist in the persistent file.
+3. Allow double click on a listed project to launch it directly.
+4. Only allow launching paths that already exist in the persistent file.
 
 ## Add Project Flow
 
@@ -70,7 +70,7 @@ The app must let the user choose between two actions:
 
 1. Open a centered, non-maximized desktop window.
 2. Show the welcome message in English.
-3. Let the user choose between `Open Existing Project` and `Add Project`.
+3. Let the user select a registered project from the visible list and use `Add Project` when needed.
 4. Load the stored paths from the persistent file.
 5. Let the user select an existing stored project.
 6. Let the user add a new project through a folder browser.
@@ -97,4 +97,4 @@ The app must let the user choose between two actions:
 7. The persistent file is excluded from Git, while an example file is committed.
 8. Selecting a project launches the existing script with the chosen path.
 9. The desktop app closes after triggering the launcher.
-10. The build process produces `desktop-app/WorkspaceDesktop.exe`.
+10. The build process produces `desktop-app/Nocly.exe`.

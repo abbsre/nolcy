@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace WorkspaceDesktop
+namespace Nocly
 {
     internal static class Program
     {
@@ -30,7 +30,6 @@ namespace WorkspaceDesktop
         private readonly Label welcomeLabel;
         private readonly Label helpLabel;
         private readonly ListBox projectsListBox;
-        private readonly Button browseRegisteredButton;
         private readonly Button addProjectButton;
         private readonly Button openProjectButton;
         private readonly Button cancelButton;
@@ -69,7 +68,7 @@ namespace WorkspaceDesktop
                 AutoSize = false,
                 Location = new Point(24, 58),
                 Size = new Size(700, 40),
-                Text = "Choose an existing registered project or add a new one. The launcher will open Nvim, Opencode and Lazygit."
+                Text = "Select a registered project or add a new one. The launcher will open Nvim, Opencode and Lazygit."
             };
 
             projectsListBox = new ListBox
@@ -81,17 +80,9 @@ namespace WorkspaceDesktop
             };
             projectsListBox.DoubleClick += (sender, args) => OpenSelectedProject();
 
-            browseRegisteredButton = new Button
-            {
-                Location = new Point(24, 355),
-                Size = new Size(165, 34),
-                Text = "Open Existing Project"
-            };
-            browseRegisteredButton.Click += (sender, args) => BrowseRegisteredProject();
-
             addProjectButton = new Button
             {
-                Location = new Point(205, 355),
+                Location = new Point(24, 355),
                 Size = new Size(140, 34),
                 Text = "Add Project"
             };
@@ -125,7 +116,6 @@ namespace WorkspaceDesktop
             Controls.Add(welcomeLabel);
             Controls.Add(helpLabel);
             Controls.Add(projectsListBox);
-            Controls.Add(browseRegisteredButton);
             Controls.Add(addProjectButton);
             Controls.Add(openProjectButton);
             Controls.Add(cancelButton);
@@ -195,32 +185,6 @@ namespace WorkspaceDesktop
         private void SaveProjects(List<string> projects)
         {
             File.WriteAllLines(projectsFilePath, projects);
-        }
-
-        private void BrowseRegisteredProject()
-        {
-            using (var dialog = new FolderBrowserDialog())
-            {
-                dialog.Description = "Select a registered project folder";
-                dialog.ShowNewFolderButton = false;
-
-                if (dialog.ShowDialog(this) != DialogResult.OK)
-                {
-                    return;
-                }
-
-                var selectedPath = dialog.SelectedPath.Trim();
-                var match = registeredProjects.FirstOrDefault(path => string.Equals(path, selectedPath, StringComparison.OrdinalIgnoreCase));
-
-                if (match == null)
-                {
-                    MessageBox.Show(this, "The selected folder is not registered yet. Use Add Project to save it first.", "Project Not Registered", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    return;
-                }
-
-                projectsListBox.SelectedItem = match;
-                SetStatus("Selected registered project: " + match, false);
-            }
         }
 
         private void AddProject()

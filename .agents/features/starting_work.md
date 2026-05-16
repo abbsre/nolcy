@@ -69,7 +69,6 @@ El sistema debe abrir tres consolas en Windows usando la ruta resuelta como cont
 
 1. `start-work.ps1`: script principal.
 2. `start-work.bat`: lanzador para ejecutar el script con doble clic o desde `cmd`.
-3. `path.txt.example`: ejemplo del formato esperado para `path.txt`.
 4. `.tools/VirtualDesktop.1.5.11/`: ubicacion opcional para una copia local ya disponible del modulo.
 5. `setup-virtualdesktop.ps1`: script de preparacion de la dependencia.
 6. `setup-virtualdesktop.bat`: lanzador del setup de la dependencia.

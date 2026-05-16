@@ -2,9 +2,9 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 $scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
-$sourceFile = Join-Path $scriptRoot 'WorkspaceDesktop.cs'
-$outputFile = Join-Path $scriptRoot 'WorkspaceDesktop.exe'
-$pdbFile = Join-Path $scriptRoot 'WorkspaceDesktop.pdb'
+$sourceFile = Join-Path $scriptRoot 'Nocly.cs'
+$outputFile = Join-Path $scriptRoot 'Nocly.exe'
+$pdbFile = Join-Path $scriptRoot 'Nocly.pdb'
 $compilerPath = Join-Path $env:WINDIR 'Microsoft.NET\Framework64\v4.0.30319\csc.exe'
 
 function Fail([string]$Message) {
