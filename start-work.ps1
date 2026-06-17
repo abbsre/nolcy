@@ -1,5 +1,7 @@
 param(
     [string]$ProjectPath,
+    [ValidateSet('vscode', 'nvim')]
+    [string]$Editor = 'vscode',
     [switch]$DryRun
 )
 
@@ -66,6 +68,38 @@ function Assert-CommandAvailable([string]$CommandName) {
     if (-not (Get-Command $CommandName -ErrorAction SilentlyContinue)) {
         Fail "El comando '$CommandName' no esta disponible en PATH."
     }
+}
+
+function Resolve-VsCodeExecutable {
+    $codeCommand = Get-Command 'code' -ErrorAction SilentlyContinue
+
+    if ($codeCommand -and -not [string]::IsNullOrWhiteSpace($codeCommand.Path)) {
+        if ([System.StringComparer]::OrdinalIgnoreCase.Equals([System.IO.Path]::GetFileName($codeCommand.Path), 'Code.exe')) {
+            return $codeCommand.Path
+        }
+
+        $commandDirectory = Split-Path -Parent $codeCommand.Path
+
+        if ([System.StringComparer]::OrdinalIgnoreCase.Equals((Split-Path -Leaf $commandDirectory), 'bin')) {
+            $candidate = Join-Path (Split-Path -Parent $commandDirectory) 'Code.exe'
+
+            if (Test-Path -LiteralPath $candidate -PathType Leaf) {
+                return $candidate
+            }
+        }
+    }
+
+    foreach ($candidate in @(
+        (Join-Path $env:LOCALAPPDATA 'Programs\Microsoft VS Code\Code.exe'),
+        (Join-Path ${env:ProgramFiles} 'Microsoft VS Code\Code.exe'),
+        (Join-Path ${env:ProgramFiles(x86)} 'Microsoft VS Code\Code.exe')
+    )) {
+        if (-not [string]::IsNullOrWhiteSpace($candidate) -and (Test-Path -LiteralPath $candidate -PathType Leaf)) {
+            return $candidate
+        }
+    }
+
+    Fail "No se encontro VSCode. Instala el comando 'code' o deja disponible Code.exe."
 }
 
 function Import-VirtualDesktopModule {
@@ -187,6 +221,57 @@ function Start-ToolConsole(
     }
 }
 
+function Start-DetachedWindow(
+    [string]$ToolName,
+    [string]$ExecutablePath,
+    [string[]]$ArgumentList,
+    [string]$WorkingDirectory,
+    [string]$WindowTitle,
+    [string]$WindowStyle = 'Normal',
+    [int]$TimeoutSeconds = 30
+) {
+    if ($DryRun) {
+        return [pscustomobject]@{
+            ToolName = $ToolName
+            Process = $null
+            Handle = [IntPtr]::Zero
+            Title = $WindowTitle
+            WindowStyle = $WindowStyle
+        }
+    }
+
+    $process = Start-Process -FilePath $ExecutablePath `
+        -ArgumentList $ArgumentList `
+        -WorkingDirectory $WorkingDirectory `
+        -WindowStyle $WindowStyle `
+        -PassThru
+
+    $handle = Wait-ForMainWindow -Process $process -TimeoutSeconds $TimeoutSeconds
+
+    return [pscustomobject]@{
+        ToolName = $ToolName
+        Process = $process
+        Handle = $handle
+        Title = $WindowTitle
+        WindowStyle = $WindowStyle
+    }
+}
+
+function Get-EditorWindow([string]$WorkingDirectory) {
+    switch ($Editor) {
+        'nvim' {
+            Assert-CommandAvailable -CommandName 'nvim'
+            return Start-ToolConsole -ToolName 'nvim' -WorkingDirectory $WorkingDirectory -WindowTitle 'nvim' -WindowStyle 'Maximized' -ToolCommand 'nvim .'
+        }
+        'vscode' {
+            $vscodeExecutable = Resolve-VsCodeExecutable
+            return Start-DetachedWindow -ToolName 'vscode' -ExecutablePath $vscodeExecutable -ArgumentList @('-n', '.') -WorkingDirectory $WorkingDirectory -WindowTitle 'VSCode' -WindowStyle 'Maximized'
+        }
+    }
+
+    Fail "Editor no soportado: $Editor"
+}
+
 function Set-WindowRect([IntPtr]$Handle, [int]$X, [int]$Y, [int]$Width, [int]$Height) {
     [void][NativeWindow]::ShowWindow($Handle, 1)
     [void][NativeWindow]::MoveWindow($Handle, $X, $Y, $Width, $Height, $true)
@@ -229,8 +314,15 @@ function Set-WorkspaceDesktops([array]$Windows) {
 try {
     $workingDirectory = Get-WorkingDirectory
 
-    foreach ($tool in @('opencode', 'lazygit', 'nvim')) {
+    foreach ($tool in @('opencode', 'lazygit')) {
         Assert-CommandAvailable -CommandName $tool
+    }
+
+    if ($Editor -eq 'vscode') {
+        [void](Resolve-VsCodeExecutable)
+    }
+    else {
+        Assert-CommandAvailable -CommandName 'nvim'
     }
 
     Import-VirtualDesktopModule
@@ -239,7 +331,7 @@ try {
     $windows = @(
         Start-ToolConsole -ToolName 'opencode' -WorkingDirectory $workingDirectory -WindowTitle 'opencode' -WindowStyle 'Normal'
         Start-ToolConsole -ToolName 'lazygit' -WorkingDirectory $workingDirectory -WindowTitle 'lazygit' -WindowStyle 'Normal' -HostExecutable 'cmd.exe'
-        Start-ToolConsole -ToolName 'nvim' -WorkingDirectory $workingDirectory -WindowTitle 'nvim' -WindowStyle 'Maximized' -ToolCommand 'nvim .'
+        Get-EditorWindow -WorkingDirectory $workingDirectory
     )
 
     if ($DryRun) {

@@ -29,6 +29,9 @@ namespace Nocly
 
         private readonly Label welcomeLabel;
         private readonly Label helpLabel;
+        private readonly Label editorLabel;
+        private readonly CheckBox vscodeCheckBox;
+        private readonly CheckBox nvimCheckBox;
         private readonly ListBox projectsListBox;
         private readonly Button addProjectButton;
         private readonly Button openProjectButton;
@@ -68,13 +71,37 @@ namespace Nocly
                 AutoSize = false,
                 Location = new Point(24, 58),
                 Size = new Size(700, 40),
-                Text = "Select a registered project or add a new one. The launcher will open Nvim, Opencode and Lazygit."
+                Text = "Select a registered project, choose an editor, or add a new one. The launcher will keep Opencode and Lazygit unchanged."
             };
+
+            editorLabel = new Label
+            {
+                AutoSize = true,
+                Location = new Point(24, 104),
+                Text = "Editor"
+            };
+
+            vscodeCheckBox = new CheckBox
+            {
+                AutoSize = true,
+                Location = new Point(84, 102),
+                Text = "VSCode",
+                Checked = true
+            };
+            vscodeCheckBox.CheckedChanged += (sender, args) => HandleEditorSelection(vscodeCheckBox, nvimCheckBox);
+
+            nvimCheckBox = new CheckBox
+            {
+                AutoSize = true,
+                Location = new Point(170, 102),
+                Text = "Nvim"
+            };
+            nvimCheckBox.CheckedChanged += (sender, args) => HandleEditorSelection(nvimCheckBox, vscodeCheckBox);
 
             projectsListBox = new ListBox
             {
-                Location = new Point(24, 115),
-                Size = new Size(710, 220),
+                Location = new Point(24, 136),
+                Size = new Size(710, 199),
                 IntegralHeight = false,
                 HorizontalScrollbar = true
             };
@@ -115,6 +142,9 @@ namespace Nocly
 
             Controls.Add(welcomeLabel);
             Controls.Add(helpLabel);
+            Controls.Add(editorLabel);
+            Controls.Add(vscodeCheckBox);
+            Controls.Add(nvimCheckBox);
             Controls.Add(projectsListBox);
             Controls.Add(addProjectButton);
             Controls.Add(openProjectButton);
@@ -254,7 +284,7 @@ namespace Nocly
                 var startInfo = new ProcessStartInfo
                 {
                     FileName = launcherPath,
-                    Arguments = QuoteArgument(selectedPath),
+                    Arguments = "-ProjectPath " + QuoteArgument(selectedPath) + " -Editor " + QuoteArgument(GetSelectedEditor()),
                     WorkingDirectory = repoRoot,
                     UseShellExecute = true
                 };
@@ -272,6 +302,35 @@ namespace Nocly
         {
             statusLabel.Text = message;
             statusLabel.ForeColor = isError ? Color.Firebrick : Color.DimGray;
+        }
+
+        private void HandleEditorSelection(CheckBox selectedCheckBox, CheckBox otherCheckBox)
+        {
+            if (selectedCheckBox.Checked)
+            {
+                if (otherCheckBox.Checked)
+                {
+                    otherCheckBox.Checked = false;
+                }
+
+                SetStatus("Editor selected: " + GetSelectedEditorName() + ".", false);
+                return;
+            }
+
+            if (!otherCheckBox.Checked)
+            {
+                selectedCheckBox.Checked = true;
+            }
+        }
+
+        private string GetSelectedEditor()
+        {
+            return vscodeCheckBox.Checked ? "vscode" : "nvim";
+        }
+
+        private string GetSelectedEditorName()
+        {
+            return vscodeCheckBox.Checked ? "VSCode" : "Nvim";
         }
 
         private static string QuoteArgument(string value)
